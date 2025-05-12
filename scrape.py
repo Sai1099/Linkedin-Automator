@@ -10,33 +10,48 @@ import requests
 driver = webdriver.Chrome()
 
 
-
-
-
-
 def login(driver,email,password):
    driver.get('https://in.linkedin.com/')
    wait = WebDriverWait(driver,10)
+   try:
 
-   button = wait.until(EC.element_to_be_clickable((By.XPATH,"""/html/body/main/section[1]/div/div/a""")))
+    button = wait.until(EC.element_to_be_clickable((By.XPATH,"""/html/body/main/section[1]/div/div/a""")))
 
 
-   button.click()
-   email_field = wait.until(EC.element_to_be_clickable((By.XPATH,"""/html/body/div/main/div[2]/div[1]/form/div[1]/input""")))
-   email_field.send_keys(email)
-   password_field = wait.until(EC.element_to_be_clickable((By.XPATH,"""/html/body/div/main/div[2]/div[1]/form/div[2]/input""")))
-   password_field.send_keys(password)
-   submit_login_button = wait.until(EC.element_to_be_clickable((By.XPATH,"""/html/body/div/main/div[2]/div[1]/form/div[4]/button""")))
-   submit_login_button.click()
+    button.click()
+    email_field = wait.until(EC.element_to_be_clickable((By.XPATH,"""/html/body/div/main/div[2]/div[1]/form/div[1]/input""")))
+    email_field.send_keys(email)
+    password_field = wait.until(EC.element_to_be_clickable((By.XPATH,"""/html/body/div/main/div[2]/div[1]/form/div[2]/input""")))
+    password_field.send_keys(password)
+    submit_login_button = wait.until(EC.element_to_be_clickable((By.XPATH,"""/html/body/div/main/div[2]/div[1]/form/div[4]/button""")))
+    submit_login_button.click()
+    wait.until(EC.presence_of_element_located((By.ID, "global-nav-search")))
+    return True
+   except Exception as e:
+       return False
 
 email = 'chsaimurali09@gmail.com'
 password = 'SAI@8688346434'
 
 
-
+#own project needs time to develop postponing..
 def connections_info(driver):
 
-  driver2 = driver.get('https://www.linkedin.com/mynetwork/invite-connect/connections/')
+  driver.get('https://www.linkedin.com/mynetwork/invite-connect/connections/')
+  wait = webdriver(driver,10)
+  for _ in range(1):
+        driver.execute_script("window.scrollBy(0, 1000);")
+        time.sleep(2)
+  show_more_results_btn = wait.until(EC.element_to_be_clickable((By.XPATH,"""/html/body/div[6]/div[3]/div/div/div/div/div[2]/div/div/main/div/section/div[2]/div[2]/div/button""")))
+  show_more_results_btn.click()
+  for _ in range(10):
+        driver.execute_script("window.scrollBy(0, 1000);")
+        time.sleep(2)
+
+  
+
+
+
 
 def get_jobs_info(driver, job_title):
     driver.get('https://www.linkedin.com/feed/')
@@ -65,19 +80,20 @@ def get_jobs_info(driver, job_title):
     soup = BeautifulSoup(driver.page_source, 'lxml')
 
     all_li_elements = soup.find_all('li', class_='artdeco-card mb2')
-    
+    total_text = []
     for li in all_li_elements:
         # Find all span elements that contain job-related text inside each li
         span_tags = li.find_all('span', dir='ltr')
         for span in span_tags:
             text = span.get_text(strip=True)
             if text:
-                print(text)
-
+                total_text.append(text)
+    return total_text
 
 
 
 job_title = 'Python intern'
-login(driver,email,password)
-get_jobs_info(driver,job_title)
+login_status = login(driver,email,password)
+#connections_info(driver)
+data = get_jobs_info(driver,job_title)
 time.sleep(10)
