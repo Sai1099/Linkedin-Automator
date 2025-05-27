@@ -3,3 +3,4 @@ selenium
 fastapi
 lxml
 uvicorn
+streamlit_pages
